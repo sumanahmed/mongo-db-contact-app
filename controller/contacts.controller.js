@@ -2,8 +2,25 @@ import Contact from "../models/contacts.models.js";
 import mongoose from "mongoose";
 
 const getAllContacts = async (req, res) => {
-    const contacts = await Contact.find();
-    res.render('home', { contacts });
+    // const contacts = await Contact.find();
+    const { page = 1, limit = 2 } = req.query;
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit)
+    };
+    const result = await Contact.paginate({}, options);
+    res.render('home', { 
+        contacts: result.docs,
+        totalPages: result.totalPages,
+        currentPage: result.page,
+        totalContacts: result.totalDocs,
+        limit: result.limit,
+        counter: result.pagingCounter,
+        hasPrevPage: result.hasPrevPage,
+        hasNextPage: result.hasNextPage,
+        prevPage: result.prevPage,
+        nextPage: result.nextPage
+     });
 };
 
 const getContactById = async (req, res) => {
