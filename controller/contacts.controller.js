@@ -1,5 +1,6 @@
 import Contact from "../models/contacts.models.js";
 import mongoose from "mongoose";
+import { validationResult } from "express-validator";
 
 const getAllContacts = async (req, res) => {
     // const contacts = await Contact.find();
@@ -42,6 +43,10 @@ const addContactPage = (req, res) => {
 };
 
 const storeContact = async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.render('add-contact', { errors: errors.mapped(), old: req.body });
+    }
     try {
         await Contact.create(req.body);
         res.redirect('/');
